@@ -1,0 +1,10 @@
+.env
+config.yaml
+client_secret*.json
+output/
+assets/licensed_clips/*
+assets/music/*
+!assets/licensed_clips/.gitkeep
+!assets/music/.gitkeep
+__pycache__/
+.pytest_cache/

@@ -1,0 +1,64 @@
+# Copy to config.yaml and edit. API keys live in .env (see .env.example), never here.
+
+channel:
+  name: "My Sci-Fi Channel"
+  niche: "hard sci-fi concepts, space exploration, future technology and sci-fi film analysis"
+  language: "en"
+  # Topics already covered are tracked in output/history.json so the channel doesn't repeat itself.
+
+video:
+  target_minutes: 10          # final long-form length
+  words_per_minute: 150       # narration pace used to size the script (10 min ~= 1500 words)
+  min_minutes: 9.5            # the script stage expands the script until it reaches this
+  width: 1920
+  height: 1080
+  fps: 30
+  burn_subtitles: false       # captions are uploaded as a separate track either way
+  music_volume: 0.10          # background music level under narration (0..1)
+
+models:
+  # ChatGPT writes the script; Claude diagnoses and repairs failures. Model IDs change often,
+  # so check the provider model pages before a run.
+  script: "gpt-6.1-sol"                # OpenAI Responses API
+  tts: "gpt-4o-mini-tts"               # OpenAI Speech API (deprecated, shuts down 2027-01-06)
+  tts_voice: "cedar"
+  openai_image: "gpt-image-2.5-flare"
+  gemini_image: "gemini-nano-banana-2.1"
+  fixer: "claude-sonnet-5-5"           # Anthropic Messages API
+
+images:
+  # Scenes alternate between providers; if one fails the other is tried, then Claude rewrites the prompt.
+  providers: ["gemini", "openai"]
+  style: "cinematic sci-fi concept art, volumetric light, anamorphic, 16:9, highly detailed, no text"
+
+footage:
+  # Order of preference for 'broll' scenes. All sources here are ones you are licensed to use.
+  sources: ["licensed_clips", "pexels", "nasa"]
+  # Put movie/TV clips here ONLY if you own a licence or they are public domain. Name files with
+  # keywords (e.g. "starship_launch_publicdomain.mp4") so scenes can be matched to them.
+  licensed_clips_dir: "assets/licensed_clips"
+  music_dir: "assets/music"   # royalty-free tracks (e.g. YouTube Audio Library downloads)
+
+thumbnail:
+  provider: "canva"          # "canva" or "local" (Pillow fallback, no account needed)
+  canva_brand_template_id: "" # template with a text field "headline" and an image field "background"
+  canva_text_field: "headline"
+  canva_image_field: "background"
+
+editing:
+  # Premiere Pro has no cloud render API, so the pipeline renders with FFmpeg and also writes an
+  # FCP7 XML timeline you can open in Premiere (File > Import) to polish before or after publishing.
+  export_premiere_xml: true
+  hold_for_manual_edit: false   # true = stop before upload so you can finish the edit in Premiere
+
+youtube:
+  privacy: "private"          # private | unlisted | public
+  schedule_publish: true       # if true, video is private with publishAt = next slot below
+  publish_weekdays: [1, 4]     # 0=Mon … 6=Sun
+  publish_hour_utc: 15
+  category_id: "28"            # 28 = Science & Technology
+  playlist_id: ""              # optional, video is added to it
+  contains_synthetic_media: true   # AI disclosure flag (status.containsSyntheticMedia)
+  made_for_kids: false
+  upload_short: true           # cut a vertical Short from the hook and upload it too
+  post_comment: true           # posts a discussion question as a comment (pin it manually; the API can't pin)
