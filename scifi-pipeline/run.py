@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Sci-fi channel pipeline.
 
-  python run.py make [--topic "..."] [--dry-run] [--minutes 10] [--resume output/<run>]
+  python run.py make [--topic "..." | --script scripts/x.json] [--dry-run] [--minutes 10]
+                     [--resume output/<run>]
   python run.py growth           # daily: post comments on newly-public videos, refresh insights
 """
 import argparse
@@ -28,7 +29,8 @@ def make(args, cfg) -> int:
     log.info("run directory: %s", run.dir)
 
     stages = [
-        ("script", lambda: script_gen.generate(run, args.topic)),
+        ("script", lambda: script_gen.load(run, Path(args.script)) if args.script
+         else script_gen.generate(run, args.topic)),
         ("images", lambda: images.generate_all(run)),
         ("broll", lambda: broll.fetch_all(run)),
         ("voice", lambda: voice.narrate_all(run)),
@@ -70,6 +72,7 @@ def main() -> int:
     sub = p.add_subparsers(dest="cmd", required=True)
     m = sub.add_parser("make")
     m.add_argument("--topic")
+    m.add_argument("--script", help="use a ready-made script JSON instead of asking ChatGPT")
     m.add_argument("--dry-run", action="store_true", help="no API calls, placeholder media")
     m.add_argument("--no-upload", action="store_true")
     m.add_argument("--publish", action="store_true", help="upload after a manual-edit hold")

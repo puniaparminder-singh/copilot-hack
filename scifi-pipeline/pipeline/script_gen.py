@@ -1,6 +1,7 @@
 """ChatGPT writes the topic, the scene-by-scene script and the YouTube metadata."""
 import json
 import logging
+from pathlib import Path
 
 from .context import ROOT, Run
 from .fixer import with_fix
@@ -111,6 +112,15 @@ def generate(run: Run, topic: str | None = None) -> dict:
 
     log.info("script: '%s', %d scenes, %d words", script["title"], len(script["scenes"]),
              word_count(script))
+    (run.dir / "script.json").write_text(json.dumps(script, indent=2))
+    return script
+
+
+def load(run: Run, path: Path) -> dict:
+    """Use a hand-written or reviewed script instead of generating one."""
+    script = _validate(json.loads(path.read_text()))
+    log.info("script from %s: '%s', %d scenes, %d words", path, script["title"],
+             len(script["scenes"]), word_count(script))
     (run.dir / "script.json").write_text(json.dumps(script, indent=2))
     return script
 

@@ -62,6 +62,7 @@ pip install -r requirements.txt          # also needs ffmpeg on PATH
 cp config.example.yaml config.yaml       # set channel name, niche, schedule…
 cp .env.example .env                     # add API keys
 python run.py make --dry-run             # full 10-min test render, no API calls
+                                         # (placeholder visuals, robot preview voice via flite)
 ```
 
 You'll need:
@@ -85,6 +86,7 @@ You'll need:
 ```bash
 python run.py make                         # new topic picked by ChatGPT
 python run.py make --topic "Dyson spheres" # specific topic
+python run.py make --script scripts/breakthrough-starshot.json   # use a reviewed, ready-made script
 python run.py make --no-upload             # render only
 python run.py make --resume output/<run>   # continue a run after an error (finished stages are skipped)
 python run.py growth                       # comments + analytics (run daily)
