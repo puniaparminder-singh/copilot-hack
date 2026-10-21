@@ -1,0 +1,5 @@
+Account No,Patient First Name,Patient Last Name,DOB,Primary Insurance,Primary Subscriber No,Appointment Date,Payer ID
+10001,Test,Patientone,01/15/1980,Aetna,W123456789,10/22/2026,
+10002,Test,Patienttwo,07/04/1975,Cigna,U987654321,10/22/2026,
+10003,Test,Patientthree,03/30/1992,Unknown Health Plan,X000111222,10/22/2026,
+10004,Test,Patientfour,11/11/1960,Aetna,,10/23/2026,
