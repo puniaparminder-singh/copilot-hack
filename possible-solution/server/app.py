@@ -1,6 +1,8 @@
 # Create a base Flask server
 
 import pickle
+from pathlib import Path
+
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -17,7 +19,9 @@ def after_request(response):
 
 
 # Load model from pickle file
-model = pickle.load(open('model.pkl', 'rb'))
+BASE_DIR = Path(__file__).resolve().parent
+with (BASE_DIR / 'model.pkl').open('rb') as model_file:
+    model = pickle.load(model_file)
 
 # Model takes two parameters - day of week and airport id, then returns a prediction of flight delay
 @app.route('/predict', methods=['GET'])
@@ -25,19 +29,22 @@ def predict():
     """
     Takes two parameters - day of week and airport id, then returns a prediction of flight delay
     """
-    # Store day_of_week as int
-    day_of_week = int(request.args.get('day_of_week'))
-    airport_id = int(request.args.get('airport_id'))
+    # Store day_of_week and airport_id as ints
+    day_value = request.args.get('day_of_week')
+    airport_value = request.args.get('airport_id')
+    if day_value is None or airport_value is None:
+        return jsonify({'error': 'day_of_week and airport_id are required'}), 400
+
+    try:
+        day_of_week = int(day_value)
+        airport_id = int(airport_value)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'day_of_week and airport_id must be integers'}), 400
+
     prediction = model.predict_proba([[day_of_week, airport_id]])[0]
-    
-    # Split prediction string by space
-    prediction = str(prediction).split(' ')
 
-    # store first value from prediction as certainty, and remove the first character
-    certainty = float(prediction[0][2:])
-
-    # store second value from prediction as delay, and remove the last character
-    delay = float(prediction[1][:-1])
+    certainty = float(prediction[0])
+    delay = float(prediction[1])
 
     # return prediction as json
     return jsonify({'certainty': certainty, 'delay': delay})
@@ -46,7 +53,8 @@ def predict():
 @app.route('/airports', methods=['GET'])
 def airports():
     # Load airports from csv file
-    airports = open('airports.csv', 'r').readlines()
+    with (BASE_DIR / 'airports.csv').open('r', encoding='utf-8') as airport_file:
+        airports = airport_file.readlines()
 
     # Remove first line of airports
     airports.pop(0)
